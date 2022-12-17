@@ -1,10 +1,18 @@
+#! /usr/bin/env python
+from sys import argv
 import tensorflow as tf
 from keras.models import load_model
 from cnn2snn import check_model_compatibility
 from keras.utils.vis_utils import plot_model
 import cnn2snn 
 
-model_keras = load_model('keras_model.h5', compile = False)
+if len(argv) != 2:
+    print("pass model path: upenn_yolov2.py [h5 model path]")
+    quit()
+
+model_path = argv[1]
+
+model_keras = load_model(model_path, compile = False)
 model_keras.summary()
 
 # compat = check_model_compatibility(model_keras, True)
