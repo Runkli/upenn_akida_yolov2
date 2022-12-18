@@ -1,0 +1,30 @@
+-----
+
+Each Sequential sub-model needs an input layer
+  Each Sequential sub-model should start with an input layer, which is the output of the previous layer
+
+-----
+
+Leaky_ReLU's should be replaced with regular ReLUs for compatibility
+Batchnorms should be merged into the layers with fold_batchnorm
+
+-----
+space_to_depth_2x is not supported, it's essentially a reshape but replacing it with reshape gives the following error:
+
+#block = replace_intermediate_layer_in_keras(block, 3, layers.Reshape((13,13,256)))
+
+The Reshape layer reshape can only be used to transform a tensor of shape (N,) to a tensor of shape (1, 1, N), and vice-versa. Receives input_shape (26, 26, 64) and output_shape (13, 13, 256).
+
+so it transforms a tensor (N,) to (1,1,N). WHO NEEDS THIS????
+
+
+we might have to run space_to_depth_2x off the board, which is fine because it's the last layer and will be returned anyway
+
+
+---------
+
+
+Pooling layer 'max_pooling2d_4' cannot be the first layer of a model or sequence. It must be placed after a convolutional layer.:
+--> add a convolution layer before that does nothing 
+--> added a 1x1 kernel with 512 filters to match the size, all kernel values are 1, the idea is that the 1x1 filter will produce the input given to it, not altering the input to maxpool, while maintaining compatibility with akida 
+
